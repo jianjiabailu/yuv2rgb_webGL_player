@@ -1,0 +1,45 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width,initial-scale=1.0">
+    <title>蒹葭乄白露</title>
+  </head>
+  <body>
+    <canvas id="canvas" width="800" height="600"></canvas>
+    <script src="./player.js"></script>
+    <script>
+        function renderYuv (renderContext, event, yuvType) {
+            // Width & height must be same as resolution of YUV frame
+            // 宽高必须跟视频的分辨率保持一致
+            var [width, height] = [1280, 720];
+            let uintArray = new Uint8Array(event.data)
+            window.renderFrame(renderContext, uintArray, width, height, yuvType);
+        }
+        function startWebSocket () {
+            let inputValue = '172.23.214.171:7000';
+            if (!inputValue)	return
+            var socketURL = `ws://${inputValue}`;
+            var ws = new WebSocket(socketURL);
+            ws.binaryType = 'arraybuffer';
+
+            ws.onopen = function(evt) {
+                ws.send({
+                    url : socketURL,
+                    cmd : "size",
+                });
+            };
+
+            var canvas = document.getElementById('canvas');
+            var renderContext = window.setupCanvas(canvas);
+
+            ws.addEventListener('message', function(event) {
+                renderYuv(renderContext, event, '422-yuyv')
+            });
+        }
+
+        startWebSocket()
+    </script>
+  </body>
+</html>
