@@ -1,0 +1,2 @@
+# yuv2rgb_webGL_player
+在前端将yuv420/yuv422转rgb渲染到canvas上实现流媒体播放
